@@ -4,6 +4,17 @@ Generated script to create Tufte-style visualizations
 """
 import logging
 
+
+def load_config(config_path=None):
+    """Load configuration from YAML file."""
+    if config_path is None:
+        config_path = Path(__file__).parent / 'config.yaml'
+    if not config_path.exists():
+        return {}
+    with open(config_path) as _f:
+        import yaml as _yaml
+        return _yaml.safe_load(_f) or {}
+
 logger = logging.getLogger(__name__)
 
 
@@ -13,7 +24,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Set random seeds
-np.random.seed(42)
+np.random.seed(config.get('data', {}).get('seed', 42))
 try:
     import tensorflow as tf
     tf.random.set_seed(42)
@@ -387,7 +398,7 @@ logger.info(f"\nSelected {len(selected_features)} features")
 
 # Code block 9
 # Visualize feature importance
-fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+fig, axes = plt.subplots(1, 2, figsize=tuple(config.get('output', {}).get('figsize', [16, 6])))
 
 # Mutual Information
 top_mi = mi_df.head(15)
@@ -413,6 +424,7 @@ plt.show()
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+import yaml
 
 # Baseline: Only lag features
 X_baseline = df_features[['lag_1', 'lag_2', 'lag_3']].fillna(0)

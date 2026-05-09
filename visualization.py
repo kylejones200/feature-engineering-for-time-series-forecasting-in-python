@@ -13,7 +13,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import seasonal_decompose
+import yaml
 
+
+
+from pathlib import Path
+
+
+def load_config(config_path=None):
+    """Load configuration from YAML file."""
+    if config_path is None:
+        config_path = Path(__file__).parent / 'config.yaml'
+    if not config_path.exists():
+        return {}
+    with open(config_path) as _f:
+        import yaml as _yaml
+        return _yaml.safe_load(_f) or {}
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -47,7 +62,7 @@ def plot_time_series_with_groups(
     """Plot a univariate time series, optionally grouped by a categorical column."""
     fig: plt.Figure
     if ax is None:
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=tuple(config.get('output', {}).get('figsize', [10, 5])))
     else:
         fig = ax.figure
 
@@ -101,7 +116,7 @@ def plot_trend_line(
 
     fig: plt.Figure
     if ax is None:
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=tuple(config.get('output', {}).get('figsize', [10, 5])))
     else:
         fig = ax.figure
 
@@ -189,7 +204,7 @@ def plot_forecast(
     lower = forecast - z * sigma
     upper = forecast + z * sigma
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=tuple(config.get('output', {}).get('figsize', [10, 5])))
     _apply_minimalist_style(ax)
 
     ax.plot(df[x_col], df[y_col], label="Observed", color="#1f77b4")

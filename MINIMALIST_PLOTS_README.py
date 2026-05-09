@@ -2,6 +2,20 @@
 
 
 
+
+from pathlib import Path
+
+
+def load_config(config_path=None):
+    """Load configuration from YAML file."""
+    if config_path is None:
+        config_path = Path(__file__).parent / 'config.yaml'
+    if not config_path.exists():
+        return {}
+    with open(config_path) as _f:
+        import yaml as _yaml
+        return _yaml.safe_load(_f) or {}
+
 # Create sample data
 
 from minimalist_plots import (
@@ -14,6 +28,7 @@ from minimalist_plots import (
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
+import yaml
 
 df = pd.DataFrame({
     'Year': np.arange(2000, 2023),

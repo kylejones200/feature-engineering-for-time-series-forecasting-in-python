@@ -7,6 +7,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error
 
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 np.random.seed(42)
 plt.rcParams.update({'font.family': 'serif','axes.spines.top': False,'axes.spines.right': False,'axes.linewidth': 0.8})
 
@@ -20,6 +26,27 @@ class Config:
     n_splits: int = 5
     horizon: int = 12
     season: int = 12
+
+def load_config(config_path=None) -> 'Config':
+    """Build Config from config.yaml, falling back to dataclass defaults."""
+    if config_path is None:
+        config_path = Path(__file__).parent / 'config.yaml'
+    if not config_path.exists():
+        return Config()
+    with open(config_path) as _f:
+        import yaml as _yaml
+        raw = _yaml.safe_load(_f) or {}
+    _d = raw.get('data', {})
+    _m = raw.get('model', {})
+    _o = raw.get('output', {})
+    return Config(
+        csv_path=_d.get('input_file', '2001-2025 Net_generation_United_States_all_sectors_monthly.csv'),
+        freq=_d.get('freq', 'MS'),
+        n_splits=_d.get('n_splits', 5),
+        horizon=_m.get('horizon', 12),
+        season=_m.get('season', 12),
+    )
+
 
 
 def load_series(cfg: Config) -> pd.Series:
@@ -76,11 +103,11 @@ def rolling_origin_importance(y: pd.Series, cfg: Config):
 
 
 def main():
-    cfg = Config()
+    cfg = load_config()
     y = load_series(cfg)
     mean_mae, imp, y_true, y_pred = rolling_origin_importance(y, cfg)
-    print(f"RF feature baseline mean MAE: {mean_mae}")
-    print(imp.head(10).to_string())
+    logger.info(f"RF feature baseline mean MAE: {mean_mae}")
+    logger.info(imp.head(10).to_string())
 
     # Importance figure
     plt.figure(figsize=(10,5))
