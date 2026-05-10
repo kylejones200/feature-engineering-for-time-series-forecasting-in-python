@@ -102,7 +102,7 @@ def rolling_origin_importance(y: pd.Series, cfg: Config):
     return float(np.mean(maes)) if maes else np.nan, imp, last_true, last_pred
 
 
-def main():
+def main(plot: bool = False):
     cfg = load_config()
     y = load_series(cfg)
     mean_mae, imp, y_true, y_pred = rolling_origin_importance(y, cfg)
@@ -110,10 +110,11 @@ def main():
     logger.info(imp.head(10).to_string())
 
     # Importance figure
-    plt.figure(figsize=(10,5))
-    imp.head(15)[::-1].plot(kind='barh')
-    plt.title('Top feature importances')
-    save_fig('eia_features.png')
+    if plot:
+        plt.figure(figsize=(10,5))
+        imp.head(15)[::-1].plot(kind='barh')
+        plt.title('Top feature importances')
+        save_fig('eia_features.png')
 
 if __name__ == '__main__':
     main()
