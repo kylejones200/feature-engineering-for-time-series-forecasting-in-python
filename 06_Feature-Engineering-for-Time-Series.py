@@ -234,8 +234,12 @@ y = y[valid_idx]
 logger.info(f"Features for selection: {len(feature_cols)}")
 logger.info(f"Valid samples: {len(X)}")
 
+# Compute feature importance on training portion only to avoid leakage into evaluation
+train_n = int(len(X) * 0.8)
+X_sel, y_sel = X.iloc[:train_n], y.iloc[:train_n]
+
 # Method 1: Mutual Information
-mi_scores = mutual_info_regression(X, y, random_state=42)
+mi_scores = mutual_info_regression(X_sel, y_sel, random_state=42)
 mi_df = pd.DataFrame({
     'feature': feature_cols,
     'mi_score': mi_scores
@@ -246,7 +250,7 @@ logger.info(mi_df.head(10))
 
 # Method 2: Random Forest Feature Importance
 rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-rf.fit(X, y)
+rf.fit(X_sel, y_sel)
 rf_importance = pd.DataFrame({
     'feature': feature_cols,
     'importance': rf.feature_importances_
