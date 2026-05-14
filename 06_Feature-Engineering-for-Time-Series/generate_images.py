@@ -132,7 +132,9 @@ logger.info(f"Feature columns: {[c for c in df_features.columns if c != 'value']
 
 
 # Code block 3
-def create_lag_features(df, target_col='value', lags=[1, 2, 3, 4, 5, 6, 12, 24]):
+def create_lag_features(df, target_col='value', lags=None):
+    if lags is None:
+        lags = [1, 2, 3, 4, 5, 6, 12, 24]
     """Create lag features with multiple windows"""
     features = df.copy()
     
@@ -156,7 +158,9 @@ logger.info(f"Total features: {len(df_features.columns)}")
 
 
 # Code block 4
-def create_rolling_features(df, target_col='value', windows=[3, 6, 12, 24]):
+def create_rolling_features(df, target_col='value', windows=None):
+    if windows is None:
+        windows = [3, 6, 12, 24]
     """Create rolling statistical features"""
     features = df.copy()
     
@@ -301,7 +305,7 @@ from sklearn.preprocessing import StandardScaler
 
 feature_cols = [c for c in df_features.columns if c != 'value']
 X = df_features[feature_cols].fillna(0)  # Simple imputation for demo
-y = df_features['value'].fillna(method='ffill')
+y = df_features['value'].ffill()
 
 # Remove rows with NaN target
 valid_idx = ~y.isna()
@@ -379,14 +383,14 @@ import yaml
 
 # Baseline: Only lag features
 X_baseline = df_features[['lag_1', 'lag_2', 'lag_3']].fillna(0)
-y_baseline = df_features['value'].fillna(method='ffill')
+y_baseline = df_features['value'].ffill()
 valid_baseline = ~y_baseline.isna()
 X_baseline = X_baseline[valid_baseline]
 y_baseline = y_baseline[valid_baseline]
 
 # Advanced: Selected features
 X_advanced = df_features[selected_features].fillna(0)
-y_advanced = df_features['value'].fillna(method='ffill')
+y_advanced = df_features['value'].ffill()
 valid_advanced = ~y_advanced.isna()
 X_advanced = X_advanced[valid_advanced]
 y_advanced = y_advanced[valid_advanced]
