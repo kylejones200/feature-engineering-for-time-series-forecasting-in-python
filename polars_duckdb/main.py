@@ -8,7 +8,6 @@ import polars as pl
 from datetime import datetime, timedelta
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
 from core import build_lagged_matrix, make_supervised_from_series, add_calendar_features
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
