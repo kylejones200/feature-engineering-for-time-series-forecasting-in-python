@@ -18,7 +18,7 @@ Advanced features capture these patterns, improving model accuracy significantly
 We use energy consumption data to demonstrate feature engineering.
 
 
-The series contains **64 annual observations from 1960–2023**, aggregated from Oklahoma energy use data. This gives enough history to build a rich set of temporal, lagged, rolling, and change-based features while still keeping the feature space interpretable.
+The series contains 64 annual observations from 1960–2023, aggregated from Oklahoma energy use data. This gives enough history to build a rich set of temporal, lagged, rolling, and change-based features while still keeping the feature space interpretable.
 ### Technique 1: Temporal Embeddings
 Temporal embeddings encode time information in ways that capture cyclical patterns.
 
@@ -59,7 +59,7 @@ External regressors incorporate domain knowledge from related datasets.
 Not all features are useful. We select the most important ones.
 
 
-Feature selection identifies the most informative features, reducing overfitting and improving model performance. In our experiment, we started from **75 engineered features** and selected **25** using a combination of **mutual information** and **Random Forest feature importance**.
+Feature selection identifies the most informative features, reducing overfitting and improving model performance. In our experiment, we started from 75 engineered features and selected 25 using a combination of mutual information and Random Forest feature importance.
 
 ### Feature Importance Visualization
 We visualize feature importance to understand what drives predictions.
@@ -67,9 +67,9 @@ We visualize feature importance to understand what drives predictions.
 
 Visualization reveals which features matter most for forecasting. On the Oklahoma energy series, the most influential features include:
 
-- Short- and medium-horizon **rolling maxima and means** (e.g., 3-, 6-, 12-, and 24-year windows)  
-- Recent **lags** (`lag_1`, `lag_3`, `lag_4`, `lag_5`)  
-- Low-order **Fourier terms** (such as `fourier_sin_1`) capturing smooth cyclic structure  
+- Short- and medium-horizon rolling maxima and means (e.g., 3-, 6-, 12-, and 24-year windows)  
+- Recent lags (`lag_1`, `lag_3`, `lag_4`, `lag_5`)  
+- Low-order Fourier terms (such as `fourier_sin_1`) capturing smooth cyclic structure  
 
 The plot saved as `feature_importance.png` highlights how these rolling and lag features dominate both mutual information scores and tree-based importances.
 
@@ -77,14 +77,14 @@ The plot saved as `feature_importance.png` highlights how these rolling and lag 
 We test how advanced features improve model performance.
 
 
-Using a simple Gradient Boosting model, we compared a **baseline feature set** (3 lags) against the **full engineered feature set**. On the Oklahoma energy series:
+Using a simple Gradient Boosting model, we compared a baseline feature set (3 lags) against the full engineered feature set. On the Oklahoma energy series:
 
 | Feature Set          | MAE        | RMSE       |
 |----------------------|-----------:|-----------:|
 | Baseline (3 lags)    | 617,104.40 | 843,327.59 |
 | Advanced features    | 406,108.33 | 494,795.88 |
 
-That corresponds to roughly a **34% reduction in MAE** and a **41% reduction in RMSE** when moving from simple lags to the richer engineered feature set.
+That corresponds to roughly a 34% reduction in MAE and a 41% reduction in RMSE when moving from simple lags to the richer engineered feature set.
 
 ### Best Practices
 - Start simple, add complexity Begin with basic features, add advanced ones incrementally

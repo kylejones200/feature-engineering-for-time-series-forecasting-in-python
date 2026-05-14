@@ -134,9 +134,8 @@ This article is part of a series of posts on time series forecasting. Here is th
 ### Thank you for being a part of the community
 *Before you go:*
 
-- Be sure to **clap** and **follow** the writer ️👏**️️**
-- [Follow us: [**X**](https://x.com/inPlainEngHQ) \| [**LinkedIn**](https://www.linkedin.com/company/inplainenglish/) \| [**YouTube**](https://www.youtube.com/channel/UCtipWUghju290NWcn8jhyAw) \| [**Newsletter**](https://newsletter.plainenglish.io/) \| [**Podcast**](https://open.spotify.com/show/7qxylRWKhvZwMz2WuEoua0)]
-- [[**Check out CoFeed, the smart way to stay up-to-date with the latest in tech**](https://cofeed.app/) **🧪**]
-- [[**Start your own free AI-powered blog on Differ**](https://differ.blog/) 🚀]
-- [[**Join our content creators community on Discord**](https://discord.gg/in-plain-english-709094664682340443) 🧑🏻‍💻]
-- [For more content, visit [**plainenglish.io**](https://plainenglish.io/) + [**stackademic.com**](https://stackademic.com/)]
+- Be sure to clap and follow the writer ️👏️️- [Follow us: [X](https://x.com/inPlainEngHQ) \| [LinkedIn](https://www.linkedin.com/company/inplainenglish/) \| [YouTube](https://www.youtube.com/channel/UCtipWUghju290NWcn8jhyAw) \| [Newsletter](https://newsletter.plainenglish.io/) \| [Podcast](https://open.spotify.com/show/7qxylRWKhvZwMz2WuEoua0)]
+- [[Check out CoFeed, the smart way to stay up-to-date with the latest in tech](https://cofeed.app/) 🧪]
+- [[Start your own free AI-powered blog on Differ](https://differ.blog/) 🚀]
+- [[Join our content creators community on Discord](https://discord.gg/in-plain-english-709094664682340443) 🧑🏻‍💻]
+- [For more content, visit [plainenglish.io](https://plainenglish.io/) + [stackademic.com](https://stackademic.com/)]
