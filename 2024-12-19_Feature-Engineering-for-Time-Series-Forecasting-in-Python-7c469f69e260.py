@@ -105,11 +105,6 @@ All transformations respect temporal order and use only available information.
 
 
 # Configuration
-plt.rcParams['figure.dpi'] = 150
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.size'] = 10
-plt.rcParams['axes.spines.top'] = False
-plt.rcParams['axes.spines.right'] = False
 np.random.seed(42)
 
 # Generate synthetic time series
