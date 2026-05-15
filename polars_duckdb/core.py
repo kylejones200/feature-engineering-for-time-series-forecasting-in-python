@@ -13,7 +13,9 @@ import duckdb
 import polars as pl
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 
 def build_lagged_matrix(
@@ -33,8 +35,7 @@ def build_lagged_matrix(
         lag_list = sorted({int(l) for l in lags if int(l) > 0})
 
     lag_exprs = ",\n            ".join(
-        f"LAG(y, {lag}) OVER (ORDER BY idx) AS y_lag_{lag}"
-        for lag in lag_list
+        f"LAG(y, {lag}) OVER (ORDER BY idx) AS y_lag_{lag}" for lag in lag_list
     )
 
     idx = list(range(len(series)))

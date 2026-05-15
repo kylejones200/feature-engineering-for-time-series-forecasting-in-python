@@ -2,14 +2,16 @@
 """Feature engineering for time series — Polars + DuckDB rewrite."""
 
 import logging
-import numpy as np
-import polars as pl
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from core import build_lagged_matrix, make_supervised_from_series, add_calendar_features
+import numpy as np
+import polars as pl
+from core import add_calendar_features, build_lagged_matrix, make_supervised_from_series
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 OUTPUT_DIR = Path(__file__).parent.parent / "images"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
