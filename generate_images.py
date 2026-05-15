@@ -3,6 +3,9 @@
 Generated script to create Tufte-style visualizations
 """
 
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
 import logging
 
 import signalplot
@@ -31,14 +34,6 @@ import pandas as pd
 
 # Set random seeds
 np.random.seed(42)
-try:
-    import tensorflow as tf
-
-    tf.random.set_seed(42)
-except ImportError:
-    tf = None
-except Exception:
-    tf = None
 
 # Tufte-style configuration
 signalplot.apply(font_family="serif")
@@ -369,7 +364,7 @@ logger.info(mi_df.head(10))
 
 # Method 2: Random Forest Feature Importance
 rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-rf.fit(X_sel, y_sel)
+_train_torch(rf, X_sel, y_sel)
 rf_importance = pd.DataFrame(
     {"feature": feature_cols, "importance": rf.feature_importances_}
 ).sort_values("importance", ascending=False)
@@ -443,14 +438,14 @@ X_a_train, X_a_test, y_a_train, y_a_test = train_test_split(
 
 # Train models
 model_baseline = GradientBoostingRegressor(n_estimators=100, random_state=42)
-model_baseline.fit(X_b_train, y_b_train)
+_train_torch(model_baseline, X_b_train, y_b_train)
 
 model_advanced = GradientBoostingRegressor(n_estimators=100, random_state=42)
-model_advanced.fit(X_a_train, y_a_train)
+_train_torch(model_advanced, X_a_train, y_a_train)
 
 # Evaluate
-pred_baseline = model_baseline.predict(X_b_test)
-pred_advanced = model_advanced.predict(X_a_test)
+pred_baseline = _predict_torch(model_baseline, X_b_test)
+pred_advanced = _predict_torch(model_advanced, X_a_test)
 
 mae_baseline = mean_absolute_error(y_b_test, pred_baseline)
 mae_advanced = mean_absolute_error(y_a_test, pred_advanced)
