@@ -15,6 +15,7 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+np.random.seed(42)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -59,7 +60,6 @@ d2y = np.gradient(dy)
 logger.info("Second Derivative (Acceleration):", d2y)
 
 # Simulated Time Series Data
-np.random.seed(42)
 data = pd.Series(np.cumsum(np.random.randn(200))) # Random walk time series
 # Create Features: Lagged Values and Rate of Change
 df = pd.DataFrame({
@@ -105,7 +105,6 @@ All transformations respect temporal order and use only available information.
 
 
 # Configuration
-np.random.seed(42)
 
 # Generate synthetic time series
 dates = pd.date_range('2023-01-01', '2025-10-31', freq='D')
@@ -251,7 +250,6 @@ Sliding window approach with Random Forest for temperature forecasting
 """
 
 
-np.random.seed(42)
 
 def create_features(series, window_size=7):
     """Create lagged features for supervised learning."""

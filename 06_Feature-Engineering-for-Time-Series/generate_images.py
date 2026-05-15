@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Set random seeds
-np.random.seed(config.get('data', {}).get('seed', 42))
+np.random.seed(42)
 try:
     import tensorflow as tf
     tf.random.set_seed(42)
