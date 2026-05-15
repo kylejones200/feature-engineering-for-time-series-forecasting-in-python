@@ -7,13 +7,12 @@ API used in ``MINIMALIST_PLOTS_README.py``.
 from __future__ import annotations
 
 import logging
-from typing import Dict, Iterable, Mapping, Optional, Sequence, Tuple
+from typing import Iterable, Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import seasonal_decompose
-import yaml
 
 
 
@@ -49,16 +48,16 @@ def plot_time_series_with_groups(
     df: pd.DataFrame,
     x_col: str,
     y_col: str,
-    group_col: Optional[str] = None,
-    group_labels: Optional[Mapping[str, str]] = None,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    colors: Optional[Sequence[str]] = None,
-    linestyles: Optional[Sequence[str]] = None,
-    save_path: Optional[str] = None,
-    ax: Optional[plt.Axes] = None,
-) -> Tuple[plt.Figure, plt.Axes]:
+    group_col: str | None = None,
+    group_labels: Mapping[str, str] | None = None,
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    colors: Sequence[str] | None = None,
+    linestyles: Sequence[str] | None = None,
+    save_path: str | None = None,
+    ax: plt.Axes | None = None,
+) -> tuple[plt.Figure, plt.Axes]:
     """Plot a univariate time series, optionally grouped by a categorical column."""
     fig: plt.Figure
     if ax is None:
@@ -104,12 +103,12 @@ def plot_trend_line(
     x: Iterable[float],
     trend_values: Iterable[float],
     trend_label: str = "Trend",
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    save_path: Optional[str] = None,
-    ax: Optional[plt.Axes] = None,
-) -> Tuple[plt.Figure, plt.Axes]:
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    save_path: str | None = None,
+    ax: plt.Axes | None = None,
+) -> tuple[plt.Figure, plt.Axes]:
     """Plot a trend line against a time or index axis."""
     x_arr = np.asarray(list(x))
     trend_arr = np.asarray(list(trend_values))
@@ -145,12 +144,12 @@ def plot_detrended_data(
     x_col: str,
     y_col: str,
     trend_values: Sequence[float],
-    group_col: Optional[str] = None,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    save_path: Optional[str] = None,
-) -> Tuple[plt.Figure, plt.Axes]:
+    group_col: str | None = None,
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    save_path: str | None = None,
+) -> tuple[plt.Figure, plt.Axes]:
     """Plot detrended series (original minus trend)."""
     detrended = df[y_col].values - np.asarray(trend_values)
     tmp = df.copy()
@@ -181,11 +180,11 @@ def plot_forecast(
     trend_model,
     n_years_ahead: int = 10,
     step_size: int = 1,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    save_path: Optional[str] = None,
-) -> Tuple[plt.Figure, plt.Axes, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    save_path: str | None = None,
+) -> tuple[plt.Figure, plt.Axes, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Plot a simple forecast with normal-based confidence intervals."""
     x = df[x_col].values.reshape(-1, 1)
     y = df[y_col].values
@@ -237,9 +236,9 @@ def plot_statistical_decomposition(
     x_col: str,
     y_col: str,
     period: int,
-    title: Optional[str] = None,
-    save_path: Optional[str] = None,
-) -> Tuple[plt.Figure, np.ndarray, seasonal_decompose]:
+    title: str | None = None,
+    save_path: str | None = None,
+) -> tuple[plt.Figure, np.ndarray, seasonal_decompose]:
     """Perform and plot a classical seasonal decomposition."""
     series = df.set_index(x_col)[y_col].asfreq("D")
     decomposition = seasonal_decompose(series, model="additive", period=period)

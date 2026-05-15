@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable, Sequence, Tuple
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
-import yaml
 
 
 
@@ -49,7 +48,7 @@ def build_lagged_matrix(
         DataFrame whose columns are lagged versions of ``series``.
         Rows with insufficient history are dropped.
     """
-    lag_list = np.where(isinstance(lags, int), list(range(1, lags + 1)), sorted(set((int(l) for l in lags if int(l) > 0))))
+    lag_list = np.where(isinstance(lags, int), list(range(1, lags + 1)), sorted({int(l) for l in lags if int(l) > 0}))
 
     df = pd.DataFrame({"y": series})
     for lag in lag_list:
@@ -67,7 +66,7 @@ def build_lagged_matrix(
 def make_supervised_from_series(
     series: pd.Series,
     lags: int | Sequence[int],
-) -> Tuple[pd.DataFrame, pd.Series]:
+) -> tuple[pd.DataFrame, pd.Series]:
     """Create (X, y) arrays for supervised learning from a time series.
 
     Args:

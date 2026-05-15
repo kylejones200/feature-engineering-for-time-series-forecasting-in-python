@@ -355,7 +355,7 @@ model_multi = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1
 model_multi.fit(X_train_multi, y_train_multi)
 y_pred_multi = model_multi.predict(X_test_multi)
 
-logger.info(f"\nMulti-step forecasting:")
+logger.info("\nMulti-step forecasting:")
 for h in range(forecast_horizon):
     horizon_rmse = np.sqrt(mean_squared_error(y_test_multi[:, h], y_pred_multi[:, h]))
     logger.info(f"Day +{h+1} RMSE: {horizon_rmse:.2f}°C")

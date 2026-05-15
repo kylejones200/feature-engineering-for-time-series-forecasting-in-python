@@ -7,7 +7,7 @@ add_calendar_features: adds datetime components as ML-ready columns.
 from __future__ import annotations
 
 import logging
-from typing import Sequence, Tuple, Union
+from typing import Sequence, Union
 
 import duckdb
 import polars as pl
@@ -38,7 +38,7 @@ def build_lagged_matrix(
     )
 
     idx = list(range(len(series)))
-    df = pl.DataFrame({"idx": idx, "y": series})
+    pl.DataFrame({"idx": idx, "y": series})
 
     result = (
         duckdb.sql(f"""
@@ -61,7 +61,7 @@ def build_lagged_matrix(
 def make_supervised_from_series(
     series: pl.Series,
     lags: Union[int, Sequence[int]],
-) -> Tuple[pl.DataFrame, pl.Series]:
+) -> tuple[pl.DataFrame, pl.Series]:
     """Return (X, y) for supervised learning from a univariate time series."""
     lagged = build_lagged_matrix(series, lags=lags)
     X = lagged.drop("y")

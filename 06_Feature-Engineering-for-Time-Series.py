@@ -86,7 +86,7 @@ def create_lag_features(df, target_col='value', lags=None):
 
 # Add lag features
 df_features = create_lag_features(df_features)
-logger.info(f"\nLag features added")
+logger.info("\nLag features added")
 logger.info(f"Total features: {len(df_features.columns)}")
 
 def create_rolling_features(df, target_col='value', windows=None):
@@ -120,7 +120,7 @@ def create_rolling_features(df, target_col='value', windows=None):
 
 # Add rolling features
 df_features = create_rolling_features(df_features)
-logger.info(f"\nRolling features added")
+logger.info("\nRolling features added")
 logger.info(f"Total features: {len(df_features.columns)}")
 
 def create_change_features(df, target_col='value'):
@@ -155,7 +155,7 @@ def create_change_features(df, target_col='value'):
 
 # Add change features
 df_features = create_change_features(df_features)
-logger.info(f"\nChange features added")
+logger.info("\nChange features added")
 logger.info(f"Total features: {len(df_features.columns)}")
 
 def create_domain_features(df, target_col='value'):
@@ -188,7 +188,7 @@ def create_domain_features(df, target_col='value'):
 
 # Add domain features
 df_features = create_domain_features(df_features)
-logger.info(f"\nDomain features added")
+logger.info("\nDomain features added")
 logger.info(f"Total features: {len(df_features.columns)}")
 
 def create_external_features(df, energy_data_path=None):
@@ -198,7 +198,7 @@ def create_external_features(df, energy_data_path=None):
     # Example: Add production data as external regressor
     if energy_data_path:
         try:
-            pr_df = pd.read_csv(energy_data_path)
+            pd.read_csv(energy_data_path)
             # Process and merge production data
             # This is a placeholder - actual implementation would merge on year
             pass
@@ -219,11 +219,10 @@ def create_external_features(df, energy_data_path=None):
 
 # Add external features
 # df_features = create_external_features(df_features, "geospatial/datasets/pr_OK.csv")
-logger.info(f"\nExternal features framework ready")
+logger.info("\nExternal features framework ready")
 
-from sklearn.feature_selection import mutual_info_regression, SelectKBest, f_regression
+from sklearn.feature_selection import mutual_info_regression
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
 
 # Prepare data for feature selection
 feature_cols = [c for c in df_features.columns if c != 'value']

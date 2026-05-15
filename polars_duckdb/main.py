@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Feature engineering for time series — Polars + DuckDB rewrite."""
 
-import sys
 import logging
 import numpy as np
 import polars as pl
@@ -25,7 +24,7 @@ def main():
     dates = [start + timedelta(days=30 * i) for i in range(n)]
 
     series = pl.Series("energy_mwh", values.tolist())
-    date_series = pl.Series("date", dates)
+    pl.Series("date", dates)
 
     # --- Demo 1: lag matrix (lags 1, 2, 3, 12) ---
     logging.info("=== Lag matrix (lags 1,2,3,12) ===")

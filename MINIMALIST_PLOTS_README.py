@@ -28,7 +28,6 @@ from minimalist_plots import (
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
-import yaml
 
 df = pd.DataFrame({
     'Year': np.arange(2000, 2023),
