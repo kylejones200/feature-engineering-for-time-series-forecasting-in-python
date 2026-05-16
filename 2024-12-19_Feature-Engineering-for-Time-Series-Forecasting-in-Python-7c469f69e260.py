@@ -338,7 +338,7 @@ def main():
     logger.info(f"Test RMSE:  {test_rmse:.2f}°C")
 
     # Time series CV
-    tscv = TimeSeriesSplit(n_splits=5)
+    tscv = TimeSeriesSplit(n_splits=config.get('cv', {}).get('n_splits', 5))
     cv_scores = []
     for train_idx, val_idx in tscv.split(X_train):
         cv_model = RandomForestRegressor(n_estimators=50, random_state=42, n_jobs=-1)
