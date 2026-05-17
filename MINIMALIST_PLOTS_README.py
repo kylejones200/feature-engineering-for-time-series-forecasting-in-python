@@ -1,7 +1,16 @@
-# Description: Short example for MINIMALIST PLOTS README.
-
-
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+from minimalist_plots import (
+    plot_detrended_data,
+    plot_forecast,
+    plot_statistical_decomposition,
+    plot_time_series_with_groups,
+    plot_trend_line,
+)
 
 
 def load_config(config_path=None):
@@ -16,29 +25,11 @@ def load_config(config_path=None):
         return _yaml.safe_load(_f) or {}
 
 
-
-def main():
-    # Create sample data
-
-    import numpy as np
-    import pandas as pd
-    from minimalist_plots import (
-        plot_detrended_data,
-        plot_forecast,
-        plot_statistical_decomposition,
-        plot_time_series_with_groups,
-        plot_trend_line,
-    )
-    from sklearn.linear_model import LinearRegression
-
+def main() -> None:
     df = pd.DataFrame(
-        {
-            "Year": np.arange(2000, 2023),
-            "Value": 50 + 0.5 * np.arange(23) + np.random.randn(23) * 2,
-        }
+        {"Year": np.arange(2000, 2023), "Value": 50 + 0.5 * np.arange(23) + np.random.randn(23) * 2}
     )
 
-    # Plot time series
     plot_time_series_with_groups(
         df,
         x_col="Year",
@@ -61,17 +52,14 @@ def main():
         save_path="grouped_plot.png",
     )
 
-
     model = LinearRegression()
+
     model.fit(df[["Year"]], df["Value"])
+
     trend = model.predict(df[["Year"]])
 
     plot_trend_line(
-        df["Year"],
-        trend,
-        trend_label="Trend",
-        title="Long-term Trend",
-        save_path="trend.png",
+        df["Year"], trend, trend_label="Trend", title="Long-term Trend", save_path="trend.png"
     )
 
     plot_detrended_data(
@@ -79,7 +67,7 @@ def main():
         x_col="Year",
         y_col="Value",
         trend_values=trend,
-        group_col="Group",  # optional
+        group_col="Group",
         title="Detrended Data",
         save_path="detrended.png",
     )
@@ -108,8 +96,8 @@ def main():
         df,
         x_col="Year",
         y_col="Value",
-        colors=["#1f77b4", "#ff7f0e"],  # Custom colors
-        linestyles=["-", "--"],  # Custom line styles
+        colors=["#1f77b4", "#ff7f0e"],
+        linestyles=["-", "--"],
         save_path="custom_plot.png",
     )
 
