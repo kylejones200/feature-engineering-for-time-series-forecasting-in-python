@@ -29,7 +29,6 @@ def main() -> None:
     df = pd.DataFrame(
         {"Year": np.arange(2000, 2023), "Value": 50 + 0.5 * np.arange(23) + np.random.randn(23) * 2}
     )
-
     plot_time_series_with_groups(
         df,
         x_col="Year",
@@ -39,9 +38,7 @@ def main() -> None:
         ylabel="Value",
         save_path="my_plot.png",
     )
-
     df["Group"] = ["A" if i % 2 == 0 else "B" for i in range(len(df))]
-
     plot_time_series_with_groups(
         df,
         x_col="Year",
@@ -51,17 +48,12 @@ def main() -> None:
         title="Time Series by Group",
         save_path="grouped_plot.png",
     )
-
     model = LinearRegression()
-
     model.fit(df[["Year"]], df["Value"])
-
     trend = model.predict(df[["Year"]])
-
     plot_trend_line(
         df["Year"], trend, trend_label="Trend", title="Long-term Trend", save_path="trend.png"
     )
-
     plot_detrended_data(
         df,
         x_col="Year",
@@ -71,7 +63,6 @@ def main() -> None:
         title="Detrended Data",
         save_path="detrended.png",
     )
-
     fig, ax, future_x, forecast, lower, upper = plot_forecast(
         df,
         x_col="Year",
@@ -82,7 +73,6 @@ def main() -> None:
         title="Forecast",
         save_path="forecast.png",
     )
-
     fig, axes, decomposition = plot_statistical_decomposition(
         df,
         x_col="Year",
@@ -91,7 +81,6 @@ def main() -> None:
         title="Statistical Decomposition",
         save_path="decomposition.png",
     )
-
     plot_time_series_with_groups(
         df,
         x_col="Year",

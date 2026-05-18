@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -34,10 +34,8 @@ def build_lagged_matrix(
     lags: int | Sequence[int],
 ) -> pd.DataFrame:
     """Build a lagged design matrix from a univariate time series.
-
     This is useful for turning a time series into a supervised learning
     problem where past values are used to predict the future.
-
     Args:
         series: Univariate time series indexed by time.
         lags: Single integer specifying the maximum lag, or an explicit
@@ -50,9 +48,8 @@ def build_lagged_matrix(
     lag_list = np.where(
         isinstance(lags, int),
         list(range(1, lags + 1)),
-        sorted({int(l) for l in lags if int(l) > 0}),
+        sorted({int(l) for lag in lags if int(l) > 0}),
     )
-
     df = pd.DataFrame({"y": series})
     for lag in lag_list:
         df[f"y_lag_{lag}"] = df["y"].shift(lag)
@@ -71,14 +68,12 @@ def make_supervised_from_series(
     lags: int | Sequence[int],
 ) -> tuple[pd.DataFrame, pd.Series]:
     """Create (X, y) arrays for supervised learning from a time series.
-
     Args:
         series: Univariate time series used as both features and target.
         lags: Single integer for maximum lag, or explicit lag list.
 
     Returns:
         Tuple ``(X, y)`` where:
-
         - ``X`` is a DataFrame of lagged features.
         - ``y`` is the aligned target series.
     """

@@ -3,12 +3,17 @@
 Generated script to create Tufte-style visualizations
 """
 
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
 import logging
+from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import signalplot
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.feature_selection import mutual_info_regression
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.model_selection import train_test_split
 
 
 def load_config(config_path=None):
@@ -26,11 +31,6 @@ def load_config(config_path=None):
 logger = logging.getLogger(__name__)
 
 
-from pathlib import Path
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 
 # Set random seeds
 np.random.seed(42)
@@ -58,7 +58,6 @@ plt.savefig = savefig_tufte
 # Code blocks from article
 
 # Code block 1
-
 
 # Load energy use data
 data_path = Path("../../geospatial/datasets/use_OK.csv")
@@ -92,25 +91,18 @@ logger.info(f"Date range: {df_base.index.min()} to {df_base.index.max()}")
 def create_temporal_features(df):
     """Create temporal embedding features"""
     features = df.copy()
-
     # Extract time components
     features["year"] = features.index.year
     features["month"] = features.index.month if hasattr(features.index, "month") else 1
     features["day_of_year"] = (
         features.index.dayofyear if hasattr(features.index, "dayofyear") else 1
     )
-
     # Cyclical encoding for year (captures long-term cycles)
     max_year = features["year"].max()
     min_year = features["year"].min()
     year_range = max_year - min_year
-    features["year_sin"] = np.sin(
-        2 * np.pi * (features["year"] - min_year) / year_range
-    )
-    features["year_cos"] = np.cos(
-        2 * np.pi * (features["year"] - min_year) / year_range
-    )
-
+    features["year_sin"] = np.sin(2 * np.pi * (features["year"] - min_year) / year_range)
+    features["year_cos"] = np.cos(2 * np.pi * (features["year"] - min_year) / year_range)
     # Cyclical encoding for month (if monthly data)
     if "month" in features.columns:
         features["month_sin"] = np.sin(2 * np.pi * features["month"] / 12)
@@ -118,20 +110,14 @@ def create_temporal_features(df):
 
     # Fourier features for seasonality (multiple frequencies)
     for freq in [1, 2, 4]:  # Annual, semi-annual, quarterly
-        features[f"fourier_sin_{freq}"] = np.sin(
-            2 * np.pi * freq * features["year"] / year_range
-        )
-        features[f"fourier_cos_{freq}"] = np.cos(
-            2 * np.pi * freq * features["year"] / year_range
-        )
+        features[f"fourier_sin_{freq}"] = np.sin(2 * np.pi * freq * features["year"] / year_range)
+        features[f"fourier_cos_{freq}"] = np.cos(2 * np.pi * freq * features["year"] / year_range)
 
     # Time since start (trend feature)
     features["time_since_start"] = features["year"] - min_year
-
     # Decade and century (categorical-like features)
     features["decade"] = (features["year"] // 10) * 10
     features["century"] = (features["year"] // 100) * 100
-
     return features
 
 
@@ -148,7 +134,6 @@ def create_lag_features(df, target_col="value", lags=None):
         lags = [1, 2, 3, 4, 5, 6, 12, 24]
     """Create lag features with multiple windows"""
     features = df.copy()
-
     for lag in lags:
         if lag <= len(features):
             features[f"lag_{lag}"] = features[target_col].shift(lag)
@@ -174,34 +159,28 @@ def create_rolling_features(df, target_col="value", windows=None):
         windows = [3, 6, 12, 24]
     """Create rolling statistical features"""
     features = df.copy()
-
     for window in windows:
         if window <= len(features):
             # Rolling mean (trend)
             features[f"rolling_mean_{window}"] = (
                 features[target_col].rolling(window, min_periods=1).mean()
             )
-
             # Rolling std (volatility)
             features[f"rolling_std_{window}"] = (
                 features[target_col].rolling(window, min_periods=1).std()
             )
-
             features[f"rolling_min_{window}"] = (
                 features[target_col].rolling(window, min_periods=1).min()
             )
             features[f"rolling_max_{window}"] = (
                 features[target_col].rolling(window, min_periods=1).max()
             )
-
             features[f"rolling_median_{window}"] = (
                 features[target_col].rolling(window, min_periods=1).median()
             )
-
             features[f"dist_from_mean_{window}"] = (
                 features[target_col] - features[f"rolling_mean_{window}"]
             )
-
             # Coefficient of variation
             features[f"cv_{window}"] = features[f"rolling_std_{window}"] / (
                 features[f"rolling_mean_{window}"] + 1e-10
@@ -220,25 +199,20 @@ logger.info(f"Total features: {len(df_features.columns)}")
 def create_change_features(df, target_col="value"):
     """Create change and rate features"""
     features = df.copy()
-
     # First difference
     features["diff_1"] = features[target_col].diff(1)
     features["diff_2"] = features[target_col].diff(2)
     features["diff_3"] = features[target_col].diff(3)
-
     # Percentage change
     features["pct_change_1"] = features[target_col].pct_change(1)
     features["pct_change_2"] = features[target_col].pct_change(2)
     features["pct_change_3"] = features[target_col].pct_change(3)
-
     # Log difference (for multiplicative processes)
     features["log_diff"] = np.log(features[target_col] + 1e-10) - np.log(
         features[target_col].shift(1) + 1e-10
     )
-
     # Acceleration (second derivative)
     features["acceleration"] = features["diff_1"].diff(1)
-
     # Year-over-year change (if annual data)
     if len(features) > 1:
         features["yoy_change"] = features[target_col] - features[target_col].shift(1)
@@ -246,7 +220,6 @@ def create_change_features(df, target_col="value"):
 
     # Cumulative sum (trend indicator)
     features["cumsum"] = features[target_col].cumsum()
-
     return features
 
 
@@ -260,25 +233,18 @@ logger.info(f"Total features: {len(df_features.columns)}")
 def create_domain_features(df, target_col="value"):
     """Create domain-specific features for energy consumption"""
     features = df.copy()
-
     # Energy-specific features
     # Growth rate (exponential growth indicator)
-    features["growth_rate"] = features[target_col] / (
-        features[target_col].shift(1) + 1e-10
-    )
-
+    features["growth_rate"] = features[target_col] / (features[target_col].shift(1) + 1e-10)
     # Energy intensity (if population data available)
     # features['energy_per_capita'] = features[target_col] / population_data
-
     # Economic cycle indicators (proxy using rolling statistics)
-    features["economic_cycle"] = (
-        features[target_col] - features["rolling_mean_12"]
-    ) / (features["rolling_std_12"] + 1e-10)
-
+    features["economic_cycle"] = (features[target_col] - features["rolling_mean_12"]) / (
+        features["rolling_std_12"] + 1e-10
+    )
     # Policy period indicators (example: post-2000 environmental policies)
     features["post_2000"] = (features.index.year >= 2000).astype(int)
     features["post_2010"] = (features.index.year >= 2010).astype(int)
-
     # Technology adoption phases (proxy using time since start)
     features["tech_phase"] = pd.cut(
         features["time_since_start"],
@@ -286,7 +252,6 @@ def create_domain_features(df, target_col="value"):
         labels=["Early", "Mid", "Late", "Modern"],
     )
     features["tech_phase"] = features["tech_phase"].cat.codes
-
     return features
 
 
@@ -300,7 +265,6 @@ logger.info(f"Total features: {len(df_features.columns)}")
 def create_external_features(df, energy_data_path=None):
     """Create features from external data sources"""
     features = df.copy()
-
     # Example: Add production data as external regressor
     if energy_data_path:
         try:
@@ -313,18 +277,11 @@ def create_external_features(df, energy_data_path=None):
 
     # Economic indicators (proxy using time-based features)
     # In practice, you'd merge actual GDP, unemployment, etc.
-    features["economic_growth_proxy"] = (
-        features["value"].pct_change(1).rolling(3).mean()
-    )
-
+    features["economic_growth_proxy"] = features["value"].pct_change(1).rolling(3).mean()
     # Technology adoption (proxy using time)
-    features["tech_adoption"] = (
-        features["time_since_start"] ** 0.5
-    )  # Diminishing returns
-
+    features["tech_adoption"] = features["time_since_start"] ** 0.5  # Diminishing returns
     # Seasonal economic factors (if monthly/quarterly data)
     # features['quarter'] = features.index.quarter if hasattr(features.index, 'quarter') else 1
-
     return features
 
 
@@ -332,10 +289,7 @@ def create_external_features(df, energy_data_path=None):
 # df_features = create_external_features(df_features, "../../geospatial/datasets/pr_OK.csv")
 logger.info("\nExternal features framework ready")
 
-
 # Code block 8
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_selection import mutual_info_regression
 
 feature_cols = [c for c in df_features.columns if c != "value"]
 X = df_features[feature_cols].fillna(0)  # Simple imputation for demo
@@ -381,12 +335,9 @@ top_features_rf = rf_importance.head(top_n)["feature"].tolist()
 selected_features = list(set(top_features_mi + top_features_rf))
 logger.info(f"\nSelected {len(selected_features)} features")
 
-
 # Code block 9
 # Visualize feature importance
-fig, axes = plt.subplots(
-    1, 2, figsize=tuple(config.get("output", {}).get("figsize", [16, 6]))
-)
+fig, axes = plt.subplots(1, 2, figsize=tuple(config.get("output", {}).get("figsize", [16, 6])))
 
 # Mutual Information
 top_mi = mi_df.head(15)
@@ -397,9 +348,7 @@ axes[0].set_xlabel("Mutual Information Score", fontsize=11)
 axes[0].set_title("Top Features by Mutual Information", fontsize=13, fontweight="bold")
 # Random Forest Importance
 top_rf = rf_importance.head(15)
-axes[1].barh(
-    range(len(top_rf)), top_rf["importance"].values, color="#ff7f0e", alpha=0.8
-)
+axes[1].barh(range(len(top_rf)), top_rf["importance"].values, color="#ff7f0e", alpha=0.8)
 axes[1].set_yticks(range(len(top_rf)))
 axes[1].set_yticklabels(top_rf["feature"].values)
 axes[1].set_xlabel("Feature Importance", fontsize=11)
@@ -408,11 +357,7 @@ plt.tight_layout()
 plt.savefig("feature_importance.png", dpi=300, bbox_inches="tight")
 plt.show()
 
-
 # Code block 10
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.model_selection import train_test_split
 
 # Baseline: Only lag features
 X_baseline = df_features[["lag_1", "lag_2", "lag_3"]].fillna(0)
@@ -461,11 +406,9 @@ logger.info(
     f"{'Improvement':<20} {(1 - mae_advanced / mae_baseline) * 100:<15.1f}% {(1 - rmse_advanced / rmse_baseline) * 100:<15.1f}%"
 )
 
-
 # Code block 11
 # Complete code for reproducibility
 # All imports, data loading, feature engineering, selection, and evaluation
 # See individual code blocks above for full implementation
-
 
 logger.info("All images generated successfully!")

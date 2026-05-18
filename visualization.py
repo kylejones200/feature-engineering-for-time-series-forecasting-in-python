@@ -7,8 +7,8 @@ API used in ``MINIMALIST_PLOTS_README.py``.
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Iterable, Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -60,17 +60,13 @@ def plot_time_series_with_groups(
     """Plot a univariate time series, optionally grouped by a categorical column."""
     fig: plt.Figure
     if ax is None:
-        fig, ax = plt.subplots(
-            figsize=tuple(config.get("output", {}).get("figsize", [10, 5]))
-        )
+        fig, ax = plt.subplots(figsize=tuple(config.get("output", {}).get("figsize", [10, 5])))
     else:
         fig = ax.figure
 
     _apply_minimalist_style(ax)
-
     x = df[x_col]
     y = df[y_col]
-
     if group_col is None:
         ax.plot(x, y, color=colors[0] if colors else "#1f77b4", linestyle="-")
     else:
@@ -92,7 +88,6 @@ def plot_time_series_with_groups(
         ax.set_ylabel(ylabel)
 
     fig.tight_layout()
-
     if save_path:
         logger.info("Saving time series plot to '%s'", save_path)
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -113,19 +108,15 @@ def plot_trend_line(
     """Plot a trend line against a time or index axis."""
     x_arr = np.asarray(list(x))
     trend_arr = np.asarray(list(trend_values))
-
     fig: plt.Figure
     if ax is None:
-        fig, ax = plt.subplots(
-            figsize=tuple(config.get("output", {}).get("figsize", [10, 5]))
-        )
+        fig, ax = plt.subplots(figsize=tuple(config.get("output", {}).get("figsize", [10, 5])))
     else:
         fig = ax.figure
 
     _apply_minimalist_style(ax)
     ax.plot(x_arr, trend_arr, label=trend_label, color="#1f77b4")
     ax.legend(frameon=False)
-
     if title:
         ax.set_title(title)
     if xlabel:
@@ -134,7 +125,6 @@ def plot_trend_line(
         ax.set_ylabel(ylabel)
 
     fig.tight_layout()
-
     if save_path:
         logger.info("Saving trend plot to '%s'", save_path)
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -157,7 +147,6 @@ def plot_detrended_data(
     detrended = df[y_col].values - np.asarray(trend_values)
     tmp = df.copy()
     tmp["detrended"] = detrended
-
     fig, ax = plot_time_series_with_groups(
         tmp,
         x_col=x_col,
@@ -168,7 +157,6 @@ def plot_detrended_data(
         ylabel=ylabel or f"{y_col} (detrended)",
         save_path=None,
     )
-
     if save_path:
         logger.info("Saving detrended plot to '%s'", save_path)
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -191,33 +179,23 @@ def plot_forecast(
     """Plot a simple forecast with normal-based confidence intervals."""
     x = df[x_col].values.reshape(-1, 1)
     y = df[y_col].values
-
     # In-sample fit and residuals
     y_hat = trend_model.predict(x)
     residuals = y - y_hat
     sigma = residuals.std(ddof=1)
-
     last_x = x.max()
-    future_x = np.arange(
-        last_x + step_size, last_x + step_size * (n_years_ahead + 1), step_size
-    )
+    future_x = np.arange(last_x + step_size, last_x + step_size * (n_years_ahead + 1), step_size)
     future_x_2d = future_x.reshape(-1, 1)
     forecast = trend_model.predict(future_x_2d)
-
     z = 1.96  # approx 95% CI
     lower = forecast - z * sigma
     upper = forecast + z * sigma
-
-    fig, ax = plt.subplots(
-        figsize=tuple(config.get("output", {}).get("figsize", [10, 5]))
-    )
+    fig, ax = plt.subplots(figsize=tuple(config.get("output", {}).get("figsize", [10, 5])))
     _apply_minimalist_style(ax)
-
     ax.plot(df[x_col], df[y_col], label="Observed", color="#1f77b4")
     ax.plot(future_x, forecast, label="Forecast", color="#ff7f0e")
     ax.fill_between(future_x, lower, upper, color="#ff7f0e", alpha=0.2, label="95% CI")
     ax.legend(frameon=False)
-
     if title:
         ax.set_title(title)
     if xlabel:
@@ -230,7 +208,6 @@ def plot_forecast(
         ax.set_ylabel(y_col)
 
     fig.tight_layout()
-
     if save_path:
         logger.info("Saving forecast plot to '%s'", save_path)
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -249,7 +226,6 @@ def plot_statistical_decomposition(
     """Perform and plot a classical seasonal decomposition."""
     series = df.set_index(x_col)[y_col].asfreq("D")
     decomposition = seasonal_decompose(series, model="additive", period=period)
-
     fig = decomposition.plot()
     axes = np.asarray(fig.axes)
     for ax in axes:
