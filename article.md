@@ -6,8 +6,6 @@ Feature engineering is the process of creating additional input features from ra
 Feature engineering is the process of creating additional input features from raw time series data to improve the performance of predictive models.
 
 
-<figcaption>Photo by <a class="markup--anchor markup--figure-anchor" rel="photo-creator noopener" target="_blank">Massimiliano Latella</a> on <a class="markup--anchor markup--figure-anchor"
-
 
 Unlike static datasets, time series data has unique temporal properties --- patterns like trends, seasonality, and lag relationships --- that can be extracted and transformed into valuable features. This article applies feature engineering techniques to examples of time series including scaling, differencing, derivatives, and memory embedding.
 
